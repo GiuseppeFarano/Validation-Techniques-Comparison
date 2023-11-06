@@ -8,7 +8,7 @@ from k_folds_validation import kf_validation
 from random_sub_sampling_validation import random_validation
 
 # Import data and select features and target
-diabetes = pd.read_csv('../datasets/diabetes.csv')
+diabetes = pd.read_csv('datasets/diabetes.csv')
 diabetes = diabetes.sample(frac=1).reset_index(drop=True)  # Shuffling all samples to avoid group bias
 selected_features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
 x = diabetes[selected_features].values  # LOOK THAT x IS A NUMPY MATRIX
