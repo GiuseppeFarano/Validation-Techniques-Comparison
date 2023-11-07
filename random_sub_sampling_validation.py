@@ -1,46 +1,29 @@
-import numpy as np
+from sklearn.model_selection import ShuffleSplit
+from utilities import normalization, evaluation_kf
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
-def random_validation(diabetes, selected_features):
-    validation_ratio = 0.2
-    train_indices = []
-    valid_indices = []
-    indices = diabetes.index
-    total_number = diabetes.shape[0]
-    validation_size = int(total_number*validation_ratio)
-    chosen_random_indexes = np.random.choice(indices, validation_size, replace=True)
-    valid_indices.extend(chosen_random_indexes)
-    train_indices = list(set(indices) - set(chosen_random_indexes))
+def random_sub_samp_validation(x, y):
+    ss = ShuffleSplit(n_splits=5, test_size=0.2, random_state=None)
+    total_acc = 0
+    total_prec = 0
+    total_rec = 0
+    total_f1 = 0
+    for i, (train_index, test_index) in enumerate(ss.split(x)):
+        x_train = x[train_index]
+        y_train = y[train_index]
+        x_test = x[test_index]
+        y_test = y[test_index]
+        [x_train, x_test] = normalization(x_train, x_test)
 
-    train_set = diabetes.loc[train_indices]  #mi prendo gli elementi corrispondenti agli indici selezionati
-    valid_set = diabetes.loc[valid_indices]  #mi prendo gli elementi corrispondenti agli indici selezionati
-    X_train = train_set[selected_features]
-    X_test = valid_set[selected_features]
-    y_train = train_set['Outcome']
-    y_test = valid_set['Outcome']
+        logistic = LogisticRegression()
+        logistic.fit(x_train, y_train)
+        y_pred = logistic.predict(x_test)
 
-    # Normalization
-    train_set = train_set.drop("Outcome", axis=1)
-    mean = train_set.mean(axis=0)
-    std = train_set.std(axis=0)
-    X_train = (X_train - mean) / std
-    X_test = (X_test - mean) / std
-
-    # Add a column of ones for the bias term REMEMBER TO ADD AFTER NORMALIZATION
-    X_train = np.column_stack((np.ones(X_train.shape[0]), X_train))
-    X_test = np.column_stack((np.ones(X_test.shape[0]), X_test))
-
-    # Training, predicting and evaluating with mini-batch
-    logistic = LogisticRegression()
-    logistic.fit(X_train, y_train)
-    y_pred_mb = logistic.predict(X_test)
-    acc_test = accuracy_score(y_test, y_pred_mb)
-    prec_test = precision_score(y_test, y_pred_mb)
-    rec_test = recall_score(y_test, y_pred_mb)
-    f1_test = f1_score(y_test, y_pred_mb)
-
-    #print metrics
-    print("\nClassification metrics with Stratification validation:")
-    print(f'Accuracy {acc_test}', f'Precision {prec_test}', f'Recall {rec_test}', f'F1 score {f1_test}')
+        print("\nClassification metrics with K-fold Cross validation:" + f" Fold{i+1}")
+        [total_acc, total_prec, total_rec, total_f1] = evaluation_kf(y_test, y_pred, total_acc, total_prec, total_rec, total_f1)
+    total_acc = total_acc/5
+    total_prec = total_prec/5
+    total_rec = total_rec/5
+    total_f1 = total_f1/5
+    print(f'\nTotal metrics from k-folds: Accuracy {total_acc}', f'Precision {total_prec}', f'Recall {total_rec}', f'F1 score {total_f1}')

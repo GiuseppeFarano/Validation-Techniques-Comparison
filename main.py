@@ -5,7 +5,7 @@ np.random.seed(123)
 from hold_out_validation import h_o_validation
 from stratification_validation import strat_validation
 from k_folds_validation import kf_validation
-from random_sub_sampling_validation import random_validation
+from random_sub_sampling_validation import random_sub_samp_validation
 
 # Import data and select features and target
 diabetes = pd.read_csv('datasets/diabetes.csv')
@@ -18,4 +18,4 @@ y = diabetes['Outcome'].values  # LOOK THAT x IS A NUMPY ARRAY
 h_o_validation(x, y)
 strat_validation(diabetes, selected_features)
 kf_validation(x, y)
-random_validation(diabetes, selected_features)
+random_sub_samp_validation(x, y)
