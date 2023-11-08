@@ -2,8 +2,8 @@ from utilities import normalization, evaluation
 from sklearn.linear_model import LogisticRegression
 
 
-def h_o_validation(x, y):
-    # Split training-data and test-data: HOLD-OUT
+def validation_hold_out(x, y):
+    # Split training-data and test-data
     train_ratio = 0.8
     train_size = int(len(x) * train_ratio)
     X_train = x[:train_size]
@@ -21,4 +21,5 @@ def h_o_validation(x, y):
 
     # Evaluating and print metrics
     print("Classification metrics with Hold-out validation:")
-    evaluation(y_test, y_pred)
+    [acc_test, prec_test, rec_test, f1_test] = evaluation(y_test, y_pred)
+    return acc_test, prec_test, rec_test, f1_test

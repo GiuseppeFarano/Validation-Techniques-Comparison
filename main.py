@@ -2,20 +2,26 @@ import numpy as np
 import pandas as pd
 np.random.seed(123)
 
-from hold_out_validation import h_o_validation
-from stratification_validation import strat_validation
-from k_folds_validation import kf_validation
-from random_sub_sampling_validation import random_sub_samp_validation
+# Import functions to compute different types of validations and to plot their performance
+from hold_out_validation import validation_hold_out
+from stratification_validation import validation_stratification
+from k_fold_validation import validation_k_fold
+from random_sub_sampling_validation import validation_random_sub_sampling
+from utilities import plot_performance
 
 # Import data and select features and target
 diabetes = pd.read_csv('datasets/diabetes.csv')
-diabetes = diabetes.sample(frac=1).reset_index(drop=True)  # Shuffling all samples to avoid group bias
 selected_features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
-x = diabetes[selected_features].values  # LOOK THAT x IS A NUMPY MATRIX
-y = diabetes['Outcome'].values  # LOOK THAT x IS A NUMPY ARRAY
+x = diabetes[selected_features].values
+y = diabetes['Outcome'].values
 
 # Validation with different techniques
-h_o_validation(x, y)
-strat_validation(diabetes, selected_features)
-kf_validation(x, y)
-random_sub_samp_validation(x, y)
+techniques = ('Hold-out', 'Stratification', 'K-folds', 'Random Sub-Sampling')
+performances_hold_out = validation_hold_out(x, y)
+performances_stratification = validation_stratification(diabetes, selected_features)
+performances_k_fold = validation_k_fold(x, y)
+performances_random_sub_sampling = validation_random_sub_sampling(x, y)
+performances = (performances_hold_out, performances_stratification, performances_k_fold, performances_random_sub_sampling)
+
+# Plot the obtained metrics
+plot_performance(techniques, performances)

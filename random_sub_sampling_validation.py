@@ -3,7 +3,7 @@ from utilities import normalization, evaluation_kf
 from sklearn.linear_model import LogisticRegression
 
 
-def random_sub_samp_validation(x, y):
+def validation_random_sub_sampling(x, y):
     ss = ShuffleSplit(n_splits=5, test_size=0.2, random_state=None)
     total_acc = 0
     total_prec = 0
@@ -20,10 +20,10 @@ def random_sub_samp_validation(x, y):
         logistic.fit(x_train, y_train)
         y_pred = logistic.predict(x_test)
 
-        print("\nClassification metrics with K-fold Cross validation:" + f" Fold{i+1}")
         [total_acc, total_prec, total_rec, total_f1] = evaluation_kf(y_test, y_pred, total_acc, total_prec, total_rec, total_f1)
     total_acc = total_acc/5
     total_prec = total_prec/5
     total_rec = total_rec/5
     total_f1 = total_f1/5
-    print(f'\nTotal metrics from k-folds: Accuracy {total_acc}', f'Precision {total_prec}', f'Recall {total_rec}', f'F1 score {total_f1}')
+    print(f'\nTotal metrics from Random subsampling: Accuracy {total_acc}', f'Precision {total_prec}', f'Recall {total_rec}', f'F1 score {total_f1}')
+    return total_acc, total_prec, total_rec, total_f1
