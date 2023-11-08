@@ -6,3 +6,5 @@ The validation techniques that gave us best results for each metric are:
 - Precision: Hold-out
 - Recall: Random sub-sampling
 - F1: Random sub-sampling
+
+![Results](./Results.png)
